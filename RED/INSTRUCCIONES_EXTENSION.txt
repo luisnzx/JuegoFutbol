@@ -1,0 +1,34 @@
+CÓMO CARGAR/RECARGAR LA EXTENSIÓN EN CHROME
+=============================================
+
+1. Abre Chrome y ve a: chrome://extensions/
+
+2. Activa el "Modo de desarrollador" (arriba a la derecha)
+
+3. Si ya la tienes cargada:
+   - Busca "Score Hero Clone" o "RED"
+   - Haz click en el botón de RECARGAR (icono circular)
+   
+4. Si NO la tienes cargada:
+   - Haz click en "Cargar extensión sin empaquetar"
+   - Selecciona la carpeta: C:\Users\luisn\Desktop\RED
+   - Haz click en "Seleccionar carpeta"
+
+5. Verifica que no haya errores en la consola de la extensión
+
+6. Haz click en el icono de la extensión (icono de puzzle en la barra superior)
+   - Busca "RED - Tactical Football"
+   - Haz click en él
+   - Debería abrir una nueva pestaña con el juego
+
+RESOLUCIÓN DE PROBLEMAS:
+------------------------
+- Si no aparece el icono, busca en el menú de extensiones (icono puzzle)
+- Si hay errores, verifica que todos los archivos estén en la carpeta:
+  * manifest.json
+  * background.js
+  * game.html
+  * game.js
+  * three.min.js
+
+- Si el juego no carga, abre la consola (F12) en la pestaña del juego y busca errores

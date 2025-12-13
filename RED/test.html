@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test</title>
+</head>
+<body>
+    <h1>Test Page</h1>
+    <p>If you see this, the server is working.</p>
+    
+    <script src="three.min.js"></script>
+    <script>
+        if (typeof THREE !== 'undefined') {
+            document.write('<p style="color: green;">THREE.js loaded successfully!</p>');
+            console.log('THREE version:', THREE.REVISION);
+        } else {
+            document.write('<p style="color: red;">THREE.js FAILED to load!</p>');
+            console.error('THREE.js is not available');
+        }
+    </script>
+</body>
+</html>

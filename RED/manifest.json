@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Score Hero Clone",
+  "version": "1.0",
+  "description": "Tactical football game extension",
+  "permissions": ["activeTab", "scripting", "tabs"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "RED - Tactical Football"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
+}
