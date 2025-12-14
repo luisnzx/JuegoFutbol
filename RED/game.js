@@ -33,8 +33,8 @@ let curve = null, curveStartTime = 0, curveDuration = 0;
 let ballTrail = []; // For ball movement trail
 let particles = []; // For pass effects
 let trailMesh = null; // For fire trail effect
-const fieldBounds = { minX: -40, maxX: 40, minZ: -50, maxZ: 50 };
-const goalArea = { z: 38, minX: -7, maxX: 7 };
+const fieldBounds = { minX: -60, maxX: 60, minZ: -75, maxZ: 75 };
+const goalArea = { z: 57, minX: -7, maxX: 7 };
 const GameState = { PAUSED: 'PAUSED', PLAYING: 'PLAYING', GAME_OVER: 'GAME_OVER' };
 let gameState = GameState.PAUSED;
 let firstPassMade = false;
@@ -88,7 +88,7 @@ async function init() {
     scene.background = new window.THREE.Color(0x87CEEB);
     
     camera = new window.THREE.PerspectiveCamera(75, w / h, 0.1, 300);
-    camera.position.set(0, 20, -40);
+    camera.position.set(0, 30, -60);
     camera.lookAt(0, 0, 0);
     camera.updateProjectionMatrix(); // Update projection matrix after camera setup
     
@@ -145,7 +145,7 @@ async function init() {
     scene.add(outerGround);
     
     // Playing field (grass with stripes)
-    const groundGeo = new window.THREE.PlaneGeometry(60, 80);
+    const groundGeo = new window.THREE.PlaneGeometry(90, 120);
     const grassCanvas = document.createElement('canvas');
     grassCanvas.width = 512;
     grassCanvas.height = 512;
@@ -176,13 +176,13 @@ async function init() {
     const postMat = new window.THREE.MeshStandardMaterial({ color: 0xffffff });
     const postGeo = new window.THREE.CylinderGeometry(0.35, 0.35, 6);
     const postLeft = new window.THREE.Mesh(postGeo, postMat);
-    postLeft.position.set(-7, 3, 38);
+    postLeft.position.set(-7, 3, 57);
     postLeft.castShadow = true;
     postLeft.receiveShadow = true;
     scene.add(postLeft);
     
     const postRight = new window.THREE.Mesh(postGeo, postMat);
-    postRight.position.set(7, 3, 38);
+    postRight.position.set(7, 3, 57);
     postRight.castShadow = true;
     postRight.receiveShadow = true;
     scene.add(postRight);
@@ -191,7 +191,7 @@ async function init() {
     const crossbarGeo = new window.THREE.CylinderGeometry(0.3, 0.3, 14);
     const crossbar = new window.THREE.Mesh(crossbarGeo, postMat);
     crossbar.rotation.z = Math.PI / 2;
-    crossbar.position.set(0, 6, 38);
+    crossbar.position.set(0, 6, 57);
     crossbar.castShadow = true;
     crossbar.receiveShadow = true;
     scene.add(crossbar);
@@ -214,24 +214,24 @@ async function init() {
     // Back panel (facing away from field)
     const netBackGeo = new window.THREE.PlaneGeometry(netWidth, netHeight, 20, 20);
     const netBack = new window.THREE.Mesh(netBackGeo, netMat.clone());
-    netBack.position.set(0, 3, 38 + netDepth);
+    netBack.position.set(0, 3, 57 + netDepth);
     
     // Top/roof panel (from crossbar back)
     const netRoofGeo = new window.THREE.PlaneGeometry(netWidth, netDepth, 20, 10);
     const netRoof = new window.THREE.Mesh(netRoofGeo, netMat.clone());
-    netRoof.position.set(0, 6, 38 + netDepth / 2);
+    netRoof.position.set(0, 6, 57 + netDepth / 2);
     netRoof.rotation.x = -Math.PI / 2;
     
     // Left side panel
     const netLeftGeo = new window.THREE.PlaneGeometry(netDepth, netHeight, 10, 20);
     const netLeft = new window.THREE.Mesh(netLeftGeo, netMat.clone());
-    netLeft.position.set(-7, 3, 38 + netDepth / 2);
+    netLeft.position.set(-7, 3, 57 + netDepth / 2);
     netLeft.rotation.y = Math.PI / 2;
     
     // Right side panel
     const netRightGeo = new window.THREE.PlaneGeometry(netDepth, netHeight, 10, 20);
     const netRight = new window.THREE.Mesh(netRightGeo, netMat.clone());
-    netRight.position.set(7, 3, 38 + netDepth / 2);
+    netRight.position.set(7, 3, 57 + netDepth / 2);
     netRight.rotation.y = -Math.PI / 2;
     
     // Bottom panel - REMOVED (no net on floor)
@@ -302,7 +302,7 @@ async function init() {
     for (let row = 0; row < 6; row++) {
         const standGeo = new window.THREE.BoxGeometry(70, 2.2, 6);
         const stand = new window.THREE.Mesh(standGeo, standMat);
-        const standZ = -55 - row * 1.5; // Closer to field
+        const standZ = -80 - row * 1.5; // Moved further back
         stand.position.set(0, 1.1 + row * 2.8, standZ);
         stand.castShadow = true;
         stand.receiveShadow = true;
@@ -322,7 +322,7 @@ async function init() {
     for (let row = 0; row < 6; row++) {
         const standGeo = new window.THREE.BoxGeometry(70, 2.2, 6);
         const stand = new window.THREE.Mesh(standGeo, standMat);
-        const standZ = 58 + row * 1.5; // Closer to field
+        const standZ = 83 + row * 1.5; // Moved further forward
         stand.position.set(0, 1.1 + row * 2.8, standZ);
         stand.castShadow = true;
         stand.receiveShadow = true;
@@ -383,7 +383,7 @@ async function init() {
         emissiveIntensity: 0.3
     });
     const banner = new window.THREE.Mesh(bannerGeo, bannerMat);
-    banner.position.set(0, 6, 50);
+    banner.position.set(0, 6, 75);
     banner.rotation.y = Math.PI;
     scene.add(banner); // Add directly to scene, not stadiumGroup
     
@@ -418,19 +418,19 @@ function createInitialActors() {
     
     // Ally team (blue)
     for (let i = 0; i < 5; i++) {
-        const x = -15 + i * 8;
-        players.push(createPlayer(new window.THREE.Vector3(x, 0, -20), 0x0066ff, true));
+        const x = -22 + i * 11;
+        players.push(createPlayer(new window.THREE.Vector3(x, 0, -30), 0x0066ff, true));
     }
-    const allyKeeper = createPlayer(new window.THREE.Vector3(0, 0, -38), 0x0066ff, true, true);
+    const allyKeeper = createPlayer(new window.THREE.Vector3(0, 0, -57), 0x0066ff, true, true);
     allyKeeper.isGoalkeeper = true;
     players.push(allyKeeper);
     
     // Enemy team (red) - add one more defender
     for (let i = 0; i < 5; i++) {
-        const x = -16 + i * 8;
-        players.push(createPlayer(new window.THREE.Vector3(x, 0, 10), 0xff0000, false, false));
+        const x = -24 + i * 12;
+        players.push(createPlayer(new window.THREE.Vector3(x, 0, 15), 0xff0000, false, false));
     }
-    const enemyKeeper = createPlayer(new window.THREE.Vector3(0, 0, 38), 0xff0000, false, true);
+    const enemyKeeper = createPlayer(new window.THREE.Vector3(0, 0, 57), 0xff0000, false, true);
     enemyKeeper.isGoalkeeper = true;
     players.push(enemyKeeper);
     
@@ -552,12 +552,12 @@ function createNormalMap() {
 function createPlayer(pos, color, isAlly, isGoalkeeper = false) {
     const group = new window.THREE.Group();
     const scale = 1.0;
-    const h = 2.8 * scale;
+    const h = 4.0 * scale;
     
-    // ===== MATERIALES REALISTAS =====
+    // ===== MATERIALES ATLÉTICOS DIFERENCIADOS =====
     const skinMat = new window.THREE.MeshStandardMaterial({
         color: 0xffdcb1,
-        roughness: 0.55,
+        roughness: 0.5,  // Piel más suave
         metalness: 0.0,
         emissive: 0x553333,
         emissiveIntensity: 0.06
@@ -565,68 +565,80 @@ function createPlayer(pos, color, isAlly, isGoalkeeper = false) {
     
     const kitMat = new window.THREE.MeshStandardMaterial({
         color: color,
-        roughness: 0.68,
-        metalness: 0.1,
+        roughness: 0.8,  // Tela deportiva más áspera
+        metalness: 0.05,
         emissive: isAlly ? 0x1a3a1a : 0x3a1a1a,
         emissiveIntensity: 0.06
     });
     
     const shortsMat = new window.THREE.MeshStandardMaterial({
         color: isAlly ? 0x001a4d : 0x4d001a,
-        roughness: 0.7,
-        metalness: 0.08
+        roughness: 0.8,  // Tela áspera
+        metalness: 0.05
     });
     
     const sockMat = new window.THREE.MeshStandardMaterial({
         color: 0xfafafa,
-        roughness: 0.75,
+        roughness: 0.8,
         metalness: 0.0
     });
     
     const shoeMat = new window.THREE.MeshStandardMaterial({
         color: 0x1a1a1a,
-        roughness: 0.62,
-        metalness: 0.22
+        roughness: 0.6,
+        metalness: 0.2
     });
     
-    // ===== CABEZA (Redondeada, no cilíndrica) =====
-    const headGeo = new window.THREE.IcosahedronGeometry(0.19 * scale, 3);
+    // ===== CABEZA ATLÉTICA =====
+    const headGeo = new window.THREE.IcosahedronGeometry(0.26 * scale, 4);
     const head = new window.THREE.Mesh(headGeo, skinMat);
     head.position.y = h * 0.90;
     head.castShadow = true;
     head.receiveShadow = true;
     group.add(head);
     
-    // ===== CUELLO (Cilíndrico fino) =====
-    const neckGeo = new window.THREE.CylinderGeometry(0.078 * scale, 0.085 * scale, h * 0.055, 8);
+    // ===== CUELLO ROBUSTO =====
+    const neckGeo = new window.THREE.CylinderGeometry(0.12 * scale, 0.13 * scale, h * 0.06, 12);
     const neck = new window.THREE.Mesh(neckGeo, skinMat);
     neck.position.y = h * 0.81;
     neck.castShadow = true;
     neck.receiveShadow = true;
     group.add(neck);
     
-    // ===== PECHO (BoxGeometry - forma humanoid) =====
-    const chestGeo = new window.THREE.BoxGeometry(0.45 * scale, h * 0.38, 0.28 * scale);
-    const chest = new window.THREE.Mesh(chestGeo, kitMat);
-    chest.position.y = h * 0.56;
-    chest.castShadow = true;
-    chest.receiveShadow = true;
-    group.add(chest);
+    // ===== TORSO TRAPEZOIDAL (HOMBROS ANCHOS) =====
+    // CylinderGeometry con radio superior mayor que inferior para forma atlética
+    const torsoGeo = new window.THREE.CylinderGeometry(
+        0.42 * scale,  // Radio superior (hombros anchos)
+        0.30 * scale,  // Radio inferior (cintura estrecha)
+        h * 0.42,      // Altura del torso
+        16             // Segmentos radiales
+    );
+    const torso = new window.THREE.Mesh(torsoGeo, kitMat);
+    torso.position.y = h * 0.54;
+    torso.castShadow = true;
+    torso.receiveShadow = true;
+    group.add(torso);
     
-    // ===== CINTURA (BoxGeometry más estrecha) =====
-    const waistGeo = new window.THREE.BoxGeometry(0.40 * scale, h * 0.16, 0.26 * scale);
-    const waist = new window.THREE.Mesh(waistGeo, shortsMat);
-    waist.position.y = h * 0.18;
-    waist.castShadow = true;
-    waist.receiveShadow = true;
-    group.add(waist);
+    // ===== CADERA/SHORTS (CILINDRO) =====
+    const hipsGeo = new window.THREE.CylinderGeometry(
+        0.32 * scale,  // Radio superior
+        0.30 * scale,  // Radio inferior
+        h * 0.18,      // Altura
+        16
+    );
+    const hips = new window.THREE.Mesh(hipsGeo, shortsMat);
+    hips.position.y = h * 0.26;
+    hips.castShadow = true;
+    hips.receiveShadow = true;
+    group.add(hips);
     
-    // ===== FUNCIÓN PARA EXTREMIDADES =====
-    function createLimb(topW, topD, botW, botD, length, material, x, y) {
+    // ===== FUNCIÓN PARA EXTREMIDADES MUSCULADAS =====
+    function createLimb(radiusTop, radiusBottom, length, material, x, y) {
         const limbGrp = new window.THREE.Group();
         
-        // Limb tapering optimizado para rendimiento
-        const limbGeo = new window.THREE.CapsuleGeometry(topW / 2, length, 2, 6);
+        // CapsuleGeometry para forma redondeada y orgánica
+        const avgRadius = (radiusTop + radiusBottom) / 2;
+        const limbGeo = new window.THREE.CapsuleGeometry(avgRadius * scale, length, 6, 12);
         const limbMesh = new window.THREE.Mesh(limbGeo, material);
         limbMesh.position.y = -length / 2;
         limbMesh.castShadow = true;
@@ -637,108 +649,126 @@ function createPlayer(pos, color, isAlly, isGoalkeeper = false) {
         return limbGrp;
     }
     
-    // ===== HOMBRO IZQUIERDO =====
+    // ===== HOMBROS ESFÉRICOS GRANDES =====
     const shoulderL = new window.THREE.Mesh(
-        new window.THREE.SphereGeometry(0.13 * scale, 8, 8),
+        new window.THREE.SphereGeometry(0.20 * scale, 12, 12),
         kitMat
     );
-    shoulderL.position.set(-0.30 * scale, h * 0.72, 0);
+    shoulderL.position.set(-0.42 * scale, h * 0.72, 0);
     shoulderL.castShadow = true;
     shoulderL.receiveShadow = true;
     group.add(shoulderL);
     
-    // ===== BRAZO SUPERIOR IZQUIERDO =====
-    const armLUpper = createLimb(0.125, 0.09, 0.105, 0.085, h * 0.31, kitMat, -0.30 * scale, h * 0.68);
-    
-    // ===== ANTEBRAZO IZQUIERDO =====
-    const armLFore = createLimb(0.105, 0.085, 0.085, 0.075, h * 0.27, skinMat, 0, -h * 0.31);
-    
-    // ===== MANO IZQUIERDA =====
-    const handL = new window.THREE.Mesh(
-        new window.THREE.BoxGeometry(0.075 * scale, 0.095 * scale, 0.068 * scale),
-        skinMat
-    );
-    handL.position.y = -h * 0.27;
-    handL.castShadow = true;
-    handL.receiveShadow = true;
-    
-    armLFore.add(handL);
-    armLUpper.add(armLFore);
-    group.add(armLUpper);
-    
-    // ===== HOMBRO DERECHO =====
     const shoulderR = new window.THREE.Mesh(
-        new window.THREE.SphereGeometry(0.13 * scale, 8, 8),
+        new window.THREE.SphereGeometry(0.20 * scale, 12, 12),
         kitMat
     );
-    shoulderR.position.set(0.30 * scale, h * 0.72, 0);
+    shoulderR.position.set(0.42 * scale, h * 0.72, 0);
     shoulderR.castShadow = true;
     shoulderR.receiveShadow = true;
     group.add(shoulderR);
     
-    // ===== BRAZO SUPERIOR DERECHO =====
-    const armRUpper = createLimb(0.125, 0.09, 0.105, 0.085, h * 0.31, kitMat, 0.30 * scale, h * 0.68);
+    // ===== BRAZOS SUPERIORES MUSCULADOS =====
+    const armLUpper = createLimb(0.18, 0.15, h * 0.32, kitMat, -0.42 * scale, h * 0.68);
+    const armRUpper = createLimb(0.18, 0.15, h * 0.32, kitMat, 0.42 * scale, h * 0.68);
     
-    // ===== ANTEBRAZO DERECHO =====
-    const armRFore = createLimb(0.105, 0.085, 0.085, 0.075, h * 0.27, skinMat, 0, -h * 0.31);
+    // ===== ANTEBRAZOS =====
+    const armLFore = createLimb(0.15, 0.12, h * 0.28, skinMat, 0, -h * 0.32);
+    const armRFore = createLimb(0.15, 0.12, h * 0.28, skinMat, 0, -h * 0.32);
     
-    // ===== MANO DERECHA =====
-    const handR = new window.THREE.Mesh(
-        new window.THREE.BoxGeometry(0.075 * scale, 0.095 * scale, 0.068 * scale),
-        skinMat
-    );
-    handR.position.y = -h * 0.27;
+    // ===== MANOS CAPSULARES =====
+    const handLGeo = new window.THREE.CapsuleGeometry(0.06 * scale, 0.12 * scale, 2, 8);
+    const handL = new window.THREE.Mesh(handLGeo, skinMat);
+    handL.position.y = -h * 0.28;
+    handL.castShadow = true;
+    handL.receiveShadow = true;
+    
+    const handRGeo = new window.THREE.CapsuleGeometry(0.06 * scale, 0.12 * scale, 2, 8);
+    const handR = new window.THREE.Mesh(handRGeo, skinMat);
+    handR.position.y = -h * 0.28;
     handR.castShadow = true;
     handR.receiveShadow = true;
+    
+    // Ensamblar brazos
+    armLFore.add(handL);
+    armLUpper.add(armLFore);
+    group.add(armLUpper);
     
     armRFore.add(handR);
     armRUpper.add(armRFore);
     group.add(armRUpper);
     
-    // ===== MUSLO IZQUIERDO =====
-    const thighL = createLimb(0.155, 0.135, 0.135, 0.115, h * 0.38, shortsMat, -0.13 * scale, h * 0.32);
+    // ===== PIERNAS - MUSLOS GRANDES Y MUSCULADOS =====
+    const thighL = createLimb(0.22, 0.18, h * 0.38, shortsMat, -0.15 * scale, h * 0.20);
+    const thighR = createLimb(0.22, 0.18, h * 0.38, shortsMat, 0.15 * scale, h * 0.20);
     
-    // ===== PANTORRILLA IZQUIERDA =====
-    const calfL = createLimb(0.125, 0.11, 0.110, 0.100, h * 0.36, sockMat, 0, -h * 0.38);
-    
-    // ===== PIE IZQUIERDO =====
-    const footL = new window.THREE.Mesh(
-        new window.THREE.BoxGeometry(0.13 * scale, 0.082 * scale, 0.29 * scale),
-        shoeMat
+    // ===== RODILLAS ESFÉRICAS =====
+    const kneeL = new window.THREE.Mesh(
+        new window.THREE.SphereGeometry(0.16 * scale, 10, 10),
+        shortsMat
     );
-    footL.position.y = -h * 0.38;
+    kneeL.position.y = -h * 0.38;
+    kneeL.castShadow = true;
+    kneeL.receiveShadow = true;
+    thighL.add(kneeL);
+    
+    const kneeR = new window.THREE.Mesh(
+        new window.THREE.SphereGeometry(0.16 * scale, 10, 10),
+        shortsMat
+    );
+    kneeR.position.y = -h * 0.38;
+    kneeR.castShadow = true;
+    kneeR.receiveShadow = true;
+    thighR.add(kneeR);
+    
+    // ===== PANTORRILLAS (GEMELOS) =====
+    const calfL = createLimb(0.18, 0.14, h * 0.36, sockMat, 0, -h * 0.38);
+    const calfR = createLimb(0.18, 0.14, h * 0.36, sockMat, 0, -h * 0.38);
+    
+    // ===== TOBILLOS =====
+    const ankleLGeo = new window.THREE.SphereGeometry(0.12 * scale, 8, 8);
+    const ankleL = new window.THREE.Mesh(ankleLGeo, sockMat);
+    ankleL.position.y = -h * 0.36;
+    ankleL.castShadow = true;
+    ankleL.receiveShadow = true;
+    calfL.add(ankleL);
+    
+    const ankleRGeo = new window.THREE.SphereGeometry(0.12 * scale, 8, 8);
+    const ankleR = new window.THREE.Mesh(ankleRGeo, sockMat);
+    ankleR.position.y = -h * 0.36;
+    ankleR.castShadow = true;
+    ankleR.receiveShadow = true;
+    calfR.add(ankleR);
+    
+    // ===== PIES/ZAPATOS =====
+    const footLGeo = new window.THREE.CapsuleGeometry(0.08 * scale, 0.28 * scale, 4, 8);
+    const footL = new window.THREE.Mesh(footLGeo, shoeMat);
+    footL.position.set(0, -h * 0.40, 0.08 * scale);
+    footL.rotation.x = Math.PI / 2;
     footL.castShadow = true;
     footL.receiveShadow = true;
-    
     calfL.add(footL);
-    thighL.add(calfL);
-    group.add(thighL);
     
-    // ===== MUSLO DERECHO =====
-    const thighR = createLimb(0.155, 0.135, 0.135, 0.115, h * 0.38, shortsMat, 0.13 * scale, h * 0.32);
-    
-    // ===== PANTORRILLA DERECHA =====
-    const calfR = createLimb(0.125, 0.11, 0.110, 0.100, h * 0.36, sockMat, 0, -h * 0.38);
-    
-    // ===== PIE DERECHO =====
-    const footR = new window.THREE.Mesh(
-        new window.THREE.BoxGeometry(0.13 * scale, 0.082 * scale, 0.29 * scale),
-        shoeMat
-    );
-    footR.position.y = -h * 0.38;
+    const footRGeo = new window.THREE.CapsuleGeometry(0.08 * scale, 0.28 * scale, 4, 8);
+    const footR = new window.THREE.Mesh(footRGeo, shoeMat);
+    footR.position.set(0, -h * 0.40, 0.08 * scale);
+    footR.rotation.x = Math.PI / 2;
     footR.castShadow = true;
     footR.receiveShadow = true;
-    
     calfR.add(footR);
+    
+    // Ensamblar piernas (articulación vital para animación)
+    thighL.add(calfL);
     thighR.add(calfR);
+    group.add(thighL);
     group.add(thighR);
     
-    // ===== SOMBRA DE CONTACTO MEJORADA =====
-    const shadowGeo = new window.THREE.CircleGeometry(0.45 * scale, 16);
+    // ===== SOMBRA DE CONTACTO =====
+    const shadowGeo = new window.THREE.CircleGeometry(0.60 * scale, 20);
     const shadowMat = new window.THREE.MeshBasicMaterial({
         color: 0x000000,
         transparent: true,
-        opacity: 0.35,
+        opacity: 0.4,
         depthWrite: false
     });
     const shadow = new window.THREE.Mesh(shadowGeo, shadowMat);
@@ -747,7 +777,6 @@ function createPlayer(pos, color, isAlly, isGoalkeeper = false) {
     group.add(shadow);
     
     group.position.set(pos.x, 0, pos.z);
-    // Habilitar frustum culling para mejor rendimiento
     group.traverse(o => o.frustumCulled = true);
     scene.add(group);
     
@@ -1005,7 +1034,7 @@ function onPointerDown(e) {
         if (groundIntersects.length) {
             const targetPos = groundIntersects[0].point.clone();
             // Permitir movimiento en todo el campo propio (hasta la línea media)
-            if (targetPos.z < 30) { // Permitir hasta casi el centro del campo
+            if (targetPos.z < 45) { // Permitir hasta casi el centro del campo (ajustado para campo 120)
                 // Store tactic position but don't move yet
                 tacticPositions[selectedPlayer.mesh.uuid] = targetPos.clone();
                 setMessage('Posición táctica guardada ✓', 800);
@@ -1412,7 +1441,7 @@ function animate() {
             if (keeper && keeper.userData.shotIncoming && t > 0.25) {
                 const predicted = curve ? curve.getPoint(1).clone() : ball.position.clone();
                 predicted.x = Math.max(goalArea.minX - 2.5, Math.min(goalArea.maxX + 2.5, predicted.x));
-                predicted.z = keeper.isAlly ? Math.max(-42, Math.min(-34, predicted.z)) : Math.max(34, Math.min(42, predicted.z));
+                predicted.z = keeper.isAlly ? Math.max(-63, Math.min(-51, predicted.z)) : Math.max(51, Math.min(63, predicted.z));
                 setPlayerTarget(keeper, predicted, 12);
 
                 // Dive/jump animation based on relative height and lateral offset
@@ -1449,11 +1478,13 @@ function animate() {
                 }
             }
             
-            // Early goal detection: STRICT - must be between posts AND under crossbar
-            // Solo gol si está entre palos (x), bajo travesaño (y), y dentro portería (z)
-            if (ball.position.z >= goalArea.z &&
+            // Early goal detection: STRICT - must be between posts AND under crossbar AND past goal line
+            // Solo gol si está DENTRO de la portería (entre palos, bajo travesaño, Y dentro de la red)
+            if (ball.position.z >= goalArea.z + 0.5 &&  // Must be INSIDE the goal net (not just at the line)
+                ball.position.z <= goalArea.z + 3.5 &&  // But not too far back (within net depth)
                 ball.position.x > goalArea.minX &&
                 ball.position.x < goalArea.maxX &&
+                ball.position.y > 0.2 &&  // Above ground
                 ball.position.y < 6.0) { // Must be under crossbar
                 showGoalAndNext();
                 return;
@@ -1471,10 +1502,12 @@ function animate() {
                 const keeper = enemies.find(pk => pk.isGoalkeeper);
                 if (keeper) keeper.userData.shotIncoming = false;
                 
-                // Final goal check - strict conditions
-                if (ball.position.z >= goalArea.z &&
+                // Final goal check - strict conditions with net depth
+                if (ball.position.z >= goalArea.z + 0.5 &&
+                    ball.position.z <= goalArea.z + 3.5 &&
                     ball.position.x > goalArea.minX &&
                     ball.position.x < goalArea.maxX &&
+                    ball.position.y > 0.2 &&
                     ball.position.y < 6.0) {
                     showGoalAndNext();
                 } else {
@@ -1745,41 +1778,78 @@ function animate() {
                     p.mesh.position.y = 0;
                 }
                 
-                // Walking animation MEJORADA - Realista
-                const walkSpeed = spd * 1.8;
-                const t = now * walkSpeed;
+                // Running animation - más realista con flexión natural
+                const runSpeed = spd * 2.2; // Faster leg movement for running
+                const t = now * runSpeed;
                 
                 if (p.joints) {
-                    // Balanceo de brazos superior (shoulder rotation)
-                    p.joints.armLUpper.rotation.x = Math.sin(t) * 0.4;
-                    p.joints.armRUpper.rotation.x = Math.sin(t + Math.PI) * 0.4;
+                    // Brazos: balanceo más amplio y flexión de codos realista
+                    const armSwing = Math.sin(t) * 0.65; // Larger arm swing for running
+                    const armCycle = Math.sin(t + Math.PI) * 0.65;
                     
-                    // Doblar codos (forearm sigue al brazo con offset)
-                    p.joints.armLFore.rotation.x = -0.25 - Math.abs(Math.sin(t) * 0.12);
-                    p.joints.armRFore.rotation.x = -0.25 - Math.abs(Math.sin(t + Math.PI) * 0.12);
+                    // Upper arm swings forward/backward
+                    p.joints.armLUpper.rotation.x = armSwing;
+                    p.joints.armRUpper.rotation.x = armCycle;
                     
-                    // Piernas superior
-                    p.joints.thighL.rotation.x = Math.sin(t + Math.PI) * 0.5;
-                    p.joints.thighR.rotation.x = Math.sin(t) * 0.5;
+                    // Forearms flex with natural cocking motion (90-120 degrees when arm is forward)
+                    // More pronounced flexion for realistic running form
+                    p.joints.armLFore.rotation.x = -0.3 - Math.max(0.25, Math.abs(armSwing) * 0.5);
+                    p.joints.armRFore.rotation.x = -0.3 - Math.max(0.25, Math.abs(armCycle) * 0.5);
                     
-                    // Piernas inferior (rodillas se doblan solo hacia atrás)
-                    p.joints.calfL.rotation.x = Math.max(0, Math.sin(t + Math.PI) * 0.85);
-                    p.joints.calfR.rotation.x = Math.max(0, Math.sin(t) * 0.85);
+                    // Thighs: large stride (0 to 90 degrees forward/backward)
+                    const thighL = Math.sin(t + Math.PI) * 0.7; // Reduced from 0.8
+                    const thighR = Math.sin(t) * 0.7;
+                    p.joints.thighL.rotation.x = thighL;
+                    p.joints.thighR.rotation.x = thighR;
+                    
+                    // Calves: controlled knee bends - only bend backward to prevent ground clipping
+                    // When thigh is forward (positive), knee bends back (positive calf rotation)
+                    p.joints.calfL.rotation.x = Math.max(0, thighL * 0.9 + 0.3); // Only positive (backward bend)
+                    p.joints.calfR.rotation.x = Math.max(0, thighR * 0.9 + 0.3);
                 }
                 
-                // Goalkeeper dive animation - throw body on ground when ball is near
+                // Goalkeeper dive/block animation with arm movements
                 if (p.isGoalkeeper && p.userData.targetPos && ball && ball.userData.state === 'moving') {
                     const ballDist = p.mesh.position.distanceTo(ball.position);
-                    if (ballDist < 6) {
-                        // Full dive: pitch forward toward the ball
-                        const diveAmount = Math.min(Math.PI / 2.8, (Math.PI / 2.8) * (1 - ballDist / 6));
-                        p.mesh.rotation.x = diveAmount;
-                    } else if (ballDist < 12) {
-                        // Lean forward toward the ball
-                        const leanAmount = Math.min(0.35, 0.35 * (1 - ballDist / 12));
-                        p.mesh.rotation.x = leanAmount;
+                    const relX = ball.position.x - p.mesh.position.x;
+                    const relZ = ball.position.z - p.mesh.position.z;
+                    const ballHeight = ball.position.y;
+                    
+                    if (ballDist < 5) {
+                        // Close save - use arms and dive
+                        if (ballHeight > 1.2) {
+                            // High ball - arms up to punch/block
+                            p.joints.armLUpper.rotation.x = -1.5; // Raise arm up
+                            p.joints.armRUpper.rotation.x = -1.5;
+                            p.joints.armLFore.rotation.x = 0.3; // Extend forearm
+                            p.joints.armRFore.rotation.x = 0.3;
+                            // Slight lean forward
+                            p.mesh.rotation.x = 0.25;
+                        } else {
+                            // Low ball - full dive to ground
+                            p.mesh.rotation.x = Math.PI / 3.5; // Pitch forward (dive)
+                            // Arms extend forward/down for ground save
+                            p.joints.armLUpper.rotation.x = 0.8;
+                            p.joints.armRUpper.rotation.x = 0.8;
+                            p.joints.armLFore.rotation.x = -0.5;
+                            p.joints.armRFore.rotation.x = -0.5;
+                        }
+                    } else if (ballDist < 10) {
+                        // Medium distance - ready position with arms high
+                        if (ballHeight > 0.8) {
+                            // Arms ready to block/punch
+                            p.joints.armLUpper.rotation.x = -0.8;
+                            p.joints.armRUpper.rotation.x = -0.8;
+                            p.joints.armLFore.rotation.x = 0.1;
+                            p.joints.armRFore.rotation.x = 0.1;
+                        }
+                        // Light lean
+                        p.mesh.rotation.x = Math.min(0.25, 0.25 * (1 - ballDist / 10));
                     } else {
-                        p.mesh.rotation.x *= 0.9; // Reset lean
+                        // Far - reset to idle ready position
+                        p.mesh.rotation.x *= 0.88;
+                        p.joints.armLUpper.rotation.x *= 0.88;
+                        p.joints.armRUpper.rotation.x *= 0.88;
                     }
                 }
                 
@@ -1790,19 +1860,18 @@ function animate() {
             } else {
                 // Reset limbs to idle
                 if (p.joints) {
-                    p.joints.armLUpper.rotation.x *= 0.92;
-                    p.joints.armRUpper.rotation.x *= 0.92;
-                    p.joints.armLFore.rotation.x *= 0.92;
-                    p.joints.armRFore.rotation.x *= 0.92;
-                    p.joints.thighL.rotation.x *= 0.92;
-                    p.joints.thighR.rotation.x *= 0.92;
-                    p.joints.calfL.rotation.x *= 0.92;
-                    p.joints.calfR.rotation.x *= 0.92;
+                    p.joints.armLUpper.rotation.x *= 0.88;
+                    p.joints.armRUpper.rotation.x *= 0.88;
+                    p.joints.armLFore.rotation.x *= 0.88;
+                    p.joints.armRFore.rotation.x *= 0.88;
+                    p.joints.thighL.rotation.x *= 0.88;
+                    p.joints.thighR.rotation.x *= 0.88;
+                    p.joints.calfL.rotation.x *= 0.88;
+                    p.joints.calfR.rotation.x *= 0.88;
                 }
-                // Reset goalkeeper lean when not moving
-                if (p.isGoalkeeper) {
-                    p.mesh.rotation.x *= 0.95;
-                }
+                // Reset body rotations (goalkeeper dive/lean)
+                p.mesh.rotation.x *= 0.90;
+                p.mesh.rotation.z *= 0.92;
                 clearPlayerTarget(p);
             }
 
@@ -1834,15 +1903,15 @@ function animate() {
         // Camera update based on mode
         if (ball) {
             if (cameraMode === 'follow') {
-                // Original follow camera (behind the action)
-                const desired = new window.THREE.Vector3(ball.position.x, ball.position.y + 20, ball.position.z - 35);
+                // Original follow camera (behind the action) - adjusted for larger field
+                const desired = new window.THREE.Vector3(ball.position.x, ball.position.y + 30, ball.position.z - 50);
                 camera.position.lerp(desired, 0.08);
-                camera.lookAt(ball.position.x, 2, ball.position.z + 5);
+                camera.lookAt(ball.position.x, 2, ball.position.z + 8);
             } else {
-                // FIFA-style camera (broadcast view from side elevation)
+                // FIFA-style camera (broadcast view from side elevation) - adjusted for larger field
                 const desired = new window.THREE.Vector3(
-                    ball.position.x * 0.3 + 50, 
-                    38, 
+                    ball.position.x * 0.3 + 70, 
+                    52, 
                     ball.position.z * 0.5
                 );
                 camera.position.lerp(desired, 0.04);
@@ -1940,6 +2009,55 @@ function animate() {
             }
         }
         
+        // ALLY PRESSING AI - when enemy has the ball (paused state)
+        // Make allies press and chase when enemy holds possession
+        if (gameState === GameState.PAUSED && activePlayer && !activePlayer.isAlly) {
+            const allies = getTeamPlayers(true).filter(a => !a.isGoalkeeper);
+            
+            if (allies.length > 0) {
+                // Sort allies by distance to ball holder
+                const sortedAllies = allies.slice().sort((a, b) => {
+                    const distA = a.mesh.position.distanceTo(activePlayer.mesh.position);
+                    const distB = b.mesh.position.distanceTo(activePlayer.mesh.position);
+                    return distA - distB;
+                });
+                
+                // Closest 2 allies press the ball aggressively
+                for (let i = 0; i < Math.min(2, sortedAllies.length); i++) {
+                    const presser = sortedAllies[i];
+                    const pressPos = activePlayer.mesh.position.clone();
+                    // Don't go past own half too much
+                    pressPos.z = Math.max(pressPos.z, -40);
+                    setPlayerTarget(presser, pressPos, 9);
+                }
+                
+                // Next 2 allies cover passing lanes
+                if (sortedAllies.length > 2) {
+                    for (let i = 2; i < Math.min(4, sortedAllies.length); i++) {
+                        const coverer = sortedAllies[i];
+                        // Position between ball and our goal
+                        const coverPos = new window.THREE.Vector3(
+                            activePlayer.mesh.position.x * 0.5 + (i - 2.5) * 8,
+                            0,
+                            Math.max(activePlayer.mesh.position.z - 10, -50)
+                        );
+                        setPlayerTarget(coverer, coverPos, 7);
+                    }
+                }
+                
+                // Remaining allies hold defensive line
+                for (let i = Math.min(4, sortedAllies.length); i < sortedAllies.length; i++) {
+                    const defender = sortedAllies[i];
+                    const defensivePos = new window.THREE.Vector3(
+                        defender.mesh.position.x,
+                        0,
+                        Math.max(-55, activePlayer.mesh.position.z - 15)
+                    );
+                    setPlayerTarget(defender, defensivePos, 6);
+                }
+            }
+        }
+        
         // Update fire particles
         for (let i = particles.length - 1; i >= 0; i--) {
             const p = particles[i];
@@ -1988,9 +2106,9 @@ function checkCollisions() {
             }
         }
 
-        // Goalkeeper has much larger interception zone for better shot-stopping
+        // Goalkeeper has slightly larger interception zone for shot-stopping
         let effectiveRadius = (p.isGoalkeeper && ball.userData.state === 'moving') 
-            ? Math.max(3.5, collisionRadius * 1.8) // 3.5 units for keeper saves
+            ? Math.max(2.3, collisionRadius * 1.3) // 2.3 units max for keeper saves
             : collisionRadius;
         
         // Enemy field players also get larger radius during moving ball or free ball
